@@ -1,27 +1,50 @@
-﻿using System;
+﻿using Akka.Actor;
+using Serilog;
+using System;
+using System.Threading;
 using System.Windows.Forms;
-using Akka.Actor;
 
 namespace ChartApp
 {
-    static class Program
-    {
-        /// <summary>
-        /// ActorSystem we'll be using to publish data to charts
-        /// and subscribe from performance counters
-        /// </summary>
-        public static ActorSystem ChartActors;
+	/// <summary>
+	///		Petabridge bootcamp for Akka.NET, Unit 2.
+	/// </summary>
+	static class Program
+	{
+		/// <summary>
+		///		The main application entry point.
+		/// </summary>
+		[STAThread]
+		static void Main()
+		{
+			ConfigureLogging();
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            ChartActors = ActorSystem.Create("ChartActors");
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Main());
-        }
-    }
+			SynchronizationContext.SetSynchronizationContext(
+				new SynchronizationContext()
+			);
+
+			using (ActorSystem chartActors = ActorSystem.Create("ChartActors"))
+			{
+				Application.EnableVisualStyles();
+				Application.SetCompatibleTextRenderingDefault(false);
+				Application.Run(
+					new MainWindow(chartActors)
+				);
+			}
+		}
+
+		/// <summary>
+		///		Configure logging for the application.
+		/// </summary>
+		static void ConfigureLogging()
+		{
+			Log.Logger =
+				new LoggerConfiguration()
+					.MinimumLevel.Information()
+					.Enrich.FromLogContext()
+					.Enrich.WithThreadId()
+					.WriteTo.Trace(outputTemplate: "[{Level}] {Message}{NewLine}{Exception}")
+					.CreateLogger();
+		}
+	}
 }

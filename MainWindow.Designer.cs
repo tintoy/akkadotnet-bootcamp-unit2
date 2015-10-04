@@ -1,6 +1,6 @@
 ﻿namespace ChartApp
 {
-    partial class Main
+    partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -60,7 +60,7 @@
             this.Controls.Add(this.sysChart);
             this.Name = "Main";
             this.Text = "System Metrics";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sysChart)).EndInit();
             this.ResumeLayout(false);

@@ -22,11 +22,7 @@ NuGetPackages/
 !Brunch.io/
 !WebFramework/
 
-# Built help
-Documentation/ApiDocs/ApiDocs/Help/
-
 # Build results
-
 [Dd]ebug/
 [Rr]elease/
 x64/
