@@ -30,7 +30,7 @@ namespace ChartApp
 		/// <summary>
 		///		The actor used to manage the chart.
 		/// </summary>
-		IActorRef				_chartActor;
+		IActorRef				_chartController;
 
 		/// <summary>
 		///		Create a new main window.
@@ -48,6 +48,18 @@ namespace ChartApp
 			InitializeComponent();
         }
 
+		/// <summary>
+		///		Add a fake series to the chart.
+		/// </summary>
+		void AddFakeSeries()
+		{
+			int nextSeriesNumber = Interlocked.Increment(ref _seriesCount);
+			Series series = ChartDataHelper.RandomSeries($"DummySeries{nextSeriesNumber}");
+			_chartController.Tell(
+				new ChartController.AddSeries(series)
+			);
+		}
+
 		#region Event handlers
 		
 		/// <summary>
@@ -61,12 +73,12 @@ namespace ChartApp
 		/// </param>
 		void Main_Load(object sender, EventArgs args)
 		{
-			_chartActor = _chartActors.ActorOf(
+			_chartController = _chartActors.ActorOf(
 				Props.Create(() => new ChartController(sysChart)),
 				name:  "charting"
 			);
 			Series dataSeries = ChartDataHelper.RandomSeries("FakeSeries" + Interlocked.Increment(ref _seriesCount));
-			_chartActor.Tell(new ChartController.InitializeChart(
+			_chartController.Tell(new ChartController.InitializeChart(
 				new Dictionary<string, Series>
 				{
 					[dataSeries.Name] = dataSeries
@@ -86,11 +98,25 @@ namespace ChartApp
 		void MainForm_FormClosing(object sender, FormClosingEventArgs args)
 		{
 			// Shut down the charting actor
-			_chartActor.Terminate();
+			_chartController.Terminate();
 
 			// Now shut down the entire actor system.
 			_chartActors.Shutdown();
 		}
+
+		/// <summary>
+		///		Called when the "add series" button is clicked.
+		/// </summary>
+		/// <param name="sender">
+		///		The event sender.
+		/// </param>
+		/// <param name="args">
+		///		The event arguments.
+		/// </param>
+		void btnAddSeries_Click(object sender, EventArgs args)
+		{
+			AddFakeSeries();
+        }
 
 		#endregion // Event handlers
 	}

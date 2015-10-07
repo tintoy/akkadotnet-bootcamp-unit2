@@ -55,6 +55,9 @@ namespace ChartApp.Actors
 			Receive<InitializeChart>(
 				message => OnInitializeChart(message)
 			);
+			Receive<AddSeries>(
+				message => OnAddSeries(message)
+			);
         }
 
 		#region Message handlers
@@ -62,27 +65,53 @@ namespace ChartApp.Actors
 		/// <summary>
 		///		Called when the actor receives the <see cref="InitializeChart"/> message.
 		/// </summary>
-		/// <param name="initializeChart">
+		/// <param name="request">
 		///		The initialisation request.
 		/// </param>
-		void OnInitializeChart(InitializeChart initializeChart)
+		void OnInitializeChart(InitializeChart request)
 		{
-			if (initializeChart == null)
-				throw new ArgumentNullException(nameof(initializeChart));
-
-			if (initializeChart.InitialSeries != null)
-				_seriesByName = new Dictionary<string, Series>(initializeChart.InitialSeries.Count); // Only replace existing series if new ones are supplied.
+			if (request == null)
+				throw new ArgumentNullException(nameof(request));
 
 			_chart.Series.Clear();
-			if (_seriesByName.Count > 0)
+
+			// Only replace existing series if new ones are supplied.
+			if (request.InitialSeries != null)
 			{
-				foreach (var indexEntry in _seriesByName)
-				{
-					// Force both the chart and the internal index to use the same names
-					indexEntry.Value.Name = indexEntry.Key;
-					_chart.Series.Add(indexEntry.Value);
-				}
+				_seriesByName.Clear();
+				foreach (var indexEntry in request.InitialSeries)
+					_seriesByName[indexEntry.Key] = indexEntry.Value;
 			}
+
+			// Initialise chart state from our cached data series.
+			foreach (var indexEntry in _seriesByName)
+			{
+				// Force both the chart and the internal index to use the same names
+				indexEntry.Value.Name = indexEntry.Key;
+				_chart.Series.Add(indexEntry.Value);
+			}
+		}
+
+		/// <summary>
+		///		Called when the actor receives the <see cref="AddSeries"/> message.
+		/// </summary>
+		/// <param name="request">
+		///		The add-data-series request.
+		/// </param>
+		void OnAddSeries(AddSeries request)
+		{
+			if (request == null)
+				throw new ArgumentNullException(nameof(request));
+
+			Series existingSeries;
+			if (_seriesByName.TryGetValue(request.Series.Name, out existingSeries))
+			{
+				_chart.Series.Remove(existingSeries);
+				_seriesByName.Remove(request.Series.Name);
+			}
+
+			_seriesByName.Add(request.Series.Name, request.Series);
+			_chart.Series.Add(request.Series);
 		}
 
 		#endregion // Message handlers
@@ -92,13 +121,8 @@ namespace ChartApp.Actors
 		/// <summary>
 		///		Tell the charting actor to initialise / reinitialise the chart.
 		/// </summary>
-		public class InitializeChart
+		public sealed class InitializeChart
 		{
-			/// <summary>
-			///		The initial data-series definitions for the chart.
-			/// </summary>
-			readonly IReadOnlyDictionary<string, Series> _initialSeries;
-
 			/// <summary>
 			///		Create a new <see cref="InitializeChart"/> request message.
 			/// </summary>
@@ -110,13 +134,38 @@ namespace ChartApp.Actors
 				if (initialSeries == null)
 					throw new ArgumentNullException(nameof(initialSeries));
 
-				_initialSeries = initialSeries;
+				InitialSeries = initialSeries;
 			}
 
 			/// <summary>
 			///		The initial data-series definitions for the chart.
 			/// </summary>
-			public IReadOnlyDictionary<string, Series> InitialSeries => _initialSeries;
+			public IReadOnlyDictionary<string, Series> InitialSeries { get; }
+		}
+
+		/// <summary>
+		///		Tell the charting actor to add a data series to its chart.
+		/// </summary>
+		public sealed class AddSeries
+		{
+			/// <summary>
+			///		Create a new <see cref="AddSeries"/> request message. 
+			/// </summary>
+			/// <param name="series">
+			///		The series to add to the chart.
+			/// </param>
+			public AddSeries(Series series)
+			{
+				if (series == null)
+					throw new ArgumentNullException(nameof(series));
+
+				Series = series;
+			}
+
+			/// <summary>
+			///		The series to add to the chart.
+			/// </summary>
+			public Series Series { get; }
 		}
 
 		#endregion // Messages
