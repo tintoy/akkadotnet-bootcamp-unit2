@@ -77,7 +77,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actors\ButtonToggler.cs" />
     <Compile Include="Actors\ChartController.cs" />
+    <Compile Include="Actors\PerformanceCountersController.cs" />
+    <Compile Include="Actors\PerformanceCounterMonitor.cs" />
     <Compile Include="AkkaExtensions.cs" />
     <Compile Include="ChartDataHelper.cs" />
     <Compile Include="MainWindow.cs">
@@ -86,6 +89,13 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Messages\CounterType.cs" />
+    <Compile Include="Messages\GatherMetrics.cs" />
+    <Compile Include="Messages\Metric.cs" />
+    <Compile Include="Messages\UnsubscribePerformanceCounter.cs" />
+    <Compile Include="Messages\SubscribePerformanceCounter.cs" />
+    <Compile Include="Messages\UnwatchCounterValue.cs" />
+    <Compile Include="Messages\WatchCounterValue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainWindow.resx">
@@ -122,6 +132,7 @@
     <Analyzer Include="packages\StyleCop.Analyzers.1.0.0-beta013\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="packages\StyleCop.Analyzers.1.0.0-beta013\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

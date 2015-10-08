@@ -104,8 +104,10 @@ namespace ChartApp
 			_chartActors.Shutdown();
 		}
 
+		#endregion // Event handlers
+
 		/// <summary>
-		///		Called when the "add series" button is clicked.
+		///		Called when the CPU button is clicked.
 		/// </summary>
 		/// <param name="sender">
 		///		The event sender.
@@ -113,11 +115,34 @@ namespace ChartApp
 		/// <param name="args">
 		///		The event arguments.
 		/// </param>
-		void btnAddSeries_Click(object sender, EventArgs args)
+		void btnProcessor_Click(object sender, EventArgs args)
 		{
-			AddFakeSeries();
-        }
+		}
 
-		#endregion // Event handlers
+		/// <summary>
+		///		Called when the Memory button is clicked.
+		/// </summary>
+		/// <param name="sender">
+		///		The event sender.
+		/// </param>
+		/// <param name="args">
+		///		The event arguments.
+		/// </param>
+		void btnMemory_Click(object sender, EventArgs args)
+		{
+		}
+
+		/// <summary>
+		///		Called when the Disk button is clicked.,
+		/// </summary>
+		/// <param name="sender">
+		///		The event sender.
+		/// </param>
+		/// <param name="args">
+		///		The event arguments.
+		/// </param>
+		void btnDisk_Click(object sender, EventArgs args)
+		{
+		}
 	}
 }
