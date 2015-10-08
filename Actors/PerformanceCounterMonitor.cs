@@ -3,14 +3,12 @@ using ChartApp.Messages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ChartApp.Actors
 {
 	/// <summary>
 	///		Actor that monitors a specific performance counter.
 	/// </summary>
-	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "Sadly, it seems that actor lifecycle does not play nicely with IDisposable")]
 	public sealed class PerformanceCounterMonitor
 		: ReceiveActor
 	{
