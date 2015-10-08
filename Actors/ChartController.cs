@@ -91,7 +91,8 @@ namespace ChartApp.Actors
 			if (request == null)
 				throw new ArgumentNullException(nameof(request));
 
-			_chart.Series.Clear();
+			if (_chart.Series.Count > 0)
+				_chart.Series.Clear(); // FFS, WinForms, why throw an exception when clearing an empty collection?
 
 			// Only replace existing series if new ones are supplied.
 			if (request.InitialSeries != null)
@@ -201,6 +202,14 @@ namespace ChartApp.Actors
 			double maxYValue = yValues.DefaultIfEmpty().Max();
 			double maxAxisY = yValues.Length > 0 ? Math.Ceiling(maxYValue) : 1.0d;
 			double minAxisY = yValues.Length > 0 ? Math.Floor(maxYValue) : 0.0d;
+
+			// AF: Errrr........
+			if (minAxisY == maxAxisY) // yesyesyes, naughty floating-point comparison. like, whatevs.
+			{
+				minAxisY = 0;
+				maxAxisY = 100;
+			}
+
 			if (allPoints.Length > 2)
 			{
 				ChartArea area = _chart.ChartAreas[0];
@@ -228,9 +237,6 @@ namespace ChartApp.Actors
 			/// </param>
 			public InitializeChart(IReadOnlyDictionary<string, Series> initialSeries)
 			{
-				if (initialSeries == null)
-					throw new ArgumentNullException(nameof(initialSeries));
-
 				InitialSeries = initialSeries;
 			}
 
